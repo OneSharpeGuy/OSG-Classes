@@ -12,4 +12,4 @@ The first Section is a 4 character Hexidecimal representation of the Days elapse
 
 [Ticker] Wrapper Class for Write-Progress to easily display a progress bar
 
-Each class contains a [<ClassName>]::Help() static method that will display an HTLM help file
+Each class contains a <ClassName>:Help() static method that will display an HTLM help file
