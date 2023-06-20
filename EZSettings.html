@@ -1,0 +1,434 @@
+<html>
+<head>
+<style>
+table, th, td {
+  border: 1px solid black;
+  border-spacing: 15px 50px;
+  border-collapse: collapse;
+}
+table {
+  width: 98%;
+}
+th, td {
+  padding: 5px;
+}
+body {
+  font-family: lucida console;
+	margin-left: 38px;
+}
+    
+</style>
+</head>
+<body>
+<title>EZSettings</title>
+<h1>EZSettings</h1>
+<h2>Synopsis</h2>
+      Retrives Module Settings
+<h2>Description</h2>
+      Retrieves and Maintains Module settings
+<h2>Properties</h2>
+<table>
+<colgroup><col width="10%"><col width="50%"><col></colgroup>
+<tr style="background-color:DeepSkyBlue">
+<th>Name</th>
+<th>Description</th>
+<th>Definition</th>
+</tr>
+<tr>
+<td>
+
+Configurator
+
+</td>
+<td>
+      Full Path to Module Loader
+</td>
+<td>
+string Configurator {get;set;}
+</td>
+</tr>
+<tr>
+<td>
+
+Consumer
+
+</td>
+<td>
+      Context under which EZSettings will be Executed      <li>Should be the same as Settings/ezProduces      <li>If Producer and Consumer do not match, file should be reset
+</td>
+<td>
+string Consumer {get;set;}
+</td>
+</tr>
+<tr>
+<td>
+
+FileName
+
+</td>
+<td>
+      Full Path of Settings File name
+</td>
+<td>
+string FileName {get;set;}
+</td>
+</tr>
+<tr>
+<td>
+
+InstanceID
+
+</td>
+<td>
+      String representation of FlashID <li>Instance ID of Class Instance that wrote the setting
+</td>
+<td>
+string InstanceID {get;set;}
+</td>
+</tr>
+<tr>
+<td>
+
+ModuleManifest
+
+</td>
+<td>
+      Full Path to Module Manifest
+</td>
+<td>
+string ModuleManifest {get;set;}
+</td>
+</tr>
+<tr>
+<td>
+
+Settings
+
+</td>
+<td>
+      Specified Settings for the module      <li>Key      <li>Value      <li>InstanceID - Matches InstanceID of object when settings was last written      <li>Written - Time setting was last written or Modifed      <li>Version
+</td>
+<td>
+array Settings {get;set;}
+</td>
+</tr>
+<tr style="background-color:GreenYellow">
+<td>
+
+ModRoot
+
+</td>
+<td>
+      CurrentUser/Current Host Module Folder
+</td>
+<td>
+static string ModRoot {get;set;}
+</td>
+</tr>
+</table>
+<h2>Methods</h2>
+<table>
+<colgroup><col width="10%"><col width="50%"><col></colgroup>
+<tr style="background-color:DeepSkyBlue">
+<th>Name</th>
+<th>Description</th>
+<th>Definition</th>
+</tr>
+<tr>
+<td>
+
+CheckSetting
+
+</td>
+<td>
+        Checks to see if setting exists; Must provide a default value.        <li>If setting does not exist Default value is written.          <li>If setting exists, no action is taken.
+</td>
+<td>
+void CheckSetting(string key, System.Object Default)
+</td>
+</tr>
+<tr>
+<td>
+
+PopSetting
+
+</td>
+<td>
+        Checks Setting and returns the value
+</td>
+<td>
+System.Object PopSetting(string key, System.Object Default)
+</td>
+</tr>
+<tr>
+<td>
+
+PushSetting
+
+</td>
+<td>
+        Writes setting unconditionally        <li>If Setting Does Not Exist then Setting is Written with the Default Value        <li>If Value is not the Default Value, Setting is Updated
+</td>
+<td>
+void PushSetting(string key, System.Object value)
+</td>
+</tr>
+<tr>
+<td>
+
+ReadSetting
+
+</td>
+<td>
+        Reads an existing setting
+</td>
+<td>
+System.Object ReadSetting(string key)
+</td>
+</tr>
+<tr>
+<td>
+
+Show
+
+</td>
+<td>
+        Returns a formatted view of the EZSetting object
+</td>
+<td>
+void Show()
+</td>
+</tr>
+<tr>
+<td>
+
+ToHashTable
+
+</td>
+<td>
+        Returns the Settings as a Setting HashTable
+</td>
+<td>
+hashtable ToHashTable()
+</td>
+</tr>
+<tr>
+<td>
+
+ToNotepad
+
+</td>
+<td>
+      <li>Lists all Keys and settings values and opens in Notepad      <li>Simply for assisting in programming
+</td>
+<td>
+void ToNotepad()
+</td>
+</tr>
+<tr>
+<td>
+
+WriteSetting
+
+</td>
+<td>
+        Writes settings Item
+</td>
+<td>
+void WriteSetting(string key, System.Object value)
+</td>
+</tr>
+<tr>
+<td>
+
+ZapSetting
+
+</td>
+<td>
+        Permanently Removes Setting 
+</td>
+<td>
+void ZapSetting(System.Object key)
+</td>
+</tr>
+<tr style="background-color:GreenYellow">
+<td>
+
+Fetch
+
+</td>
+<td>
+        Invokes the contructor and returns the Settings HashTable
+</td>
+<td>
+static hashtable Fetch(string pathHint)
+</td>
+</tr>
+<tr style="background-color:GreenYellow">
+<td>
+
+FindConfigurator
+
+</td>
+<td>
+        Returns  the Path to the Module Initialization Script
+</td>
+<td>
+static string FindConfigurator(string Anchor)
+</td>
+</tr>
+<tr style="background-color:GreenYellow">
+<td>
+
+FindModuleHome
+
+</td>
+<td>
+        Returns the Module Home Path
+</td>
+<td>
+static string FindModuleHome(string Anchor)
+</td>
+</tr>
+<tr style="background-color:GreenYellow">
+<td>
+
+help
+
+</td>
+<td>
+Displays this help file
+</td>
+<td>
+static void help()
+</td>
+</tr>
+<tr style="background-color:GreenYellow">
+<td>
+
+NormalizeKey
+
+</td>
+<td>
+        Modifies Key, normalizing spaces, removing non word characters and converting to Title Case
+</td>
+<td>
+static string NormalizeKey(string target)
+</td>
+</tr>
+<tr style="background-color:GreenYellow">
+<td>
+
+RMRPath
+
+</td>
+<td>
+        Shortens Full Mod Path to Relative to Mod Root        <li>C:\Users\chuck.sharpe\Documents\WindowsPowerShell\Modules\OSGPSX\Classes\EZSettings.Html        <li>becomes OSGPSX\Classes\EZSettings.Html
+</td>
+<td>
+static string RMRPath(string Path)
+</td>
+</tr>
+<tr style="background-color:Lime">
+<td>
+
+new
+
+</td>
+<td>
+Creates new [EZSettings]
+</td>
+<td>
+EZSettings new(string pathHint)<br>EZSettings new(string pathHint, bool reset)
+</td>
+</tr>
+<tr style="background-color:Yellow">
+<td>
+<strong>
+Equals
+</strong>
+</td>
+<td>
+Determines whether the specified object is equal to the current object.
+</td>
+<td>
+bool Equals(System.Object obj)
+</td>
+</tr>
+<tr style="background-color:Yellow">
+<td>
+<strong>
+GetHashCode
+</strong>
+</td>
+<td>
+Returns a hash code for the current object
+</td>
+<td>
+int GetHashCode()
+</td>
+</tr>
+<tr style="background-color:Yellow">
+<td>
+<strong>
+GetType
+</strong>
+</td>
+<td>
+Returns Object type [EZSettings]
+</td>
+<td>
+type GetType()
+</td>
+</tr>
+<tr style="background-color:Yellow">
+<td>
+<strong>
+ToString
+</strong>
+</td>
+<td>
+Returns a string that represents the current object
+</td>
+<td>
+string ToString()
+</td>
+</tr>
+<tr style="background-color:Gold">
+<td>
+<strong>
+Equals
+</strong>
+</td>
+<td>
+Determines whether the specified object instances are considered equal.
+</td>
+<td>
+static bool Equals(System.Object objA, System.Object objB)
+</td>
+</tr>
+<tr style="background-color:Gold">
+<td>
+<strong>
+ReferenceEquals
+</strong>
+</td>
+<td>
+true if objA is the same instance as objB or if both are null; otherwise, false.
+</td>
+<td>
+static bool ReferenceEquals(System.Object objA, System.Object objB)
+</td>
+</tr>
+</table>
+<br>
+<table style="width:10%">
+<tr style="background-color:DeepSkyBlue">
+<th>Legend</th></tr>
+<tr><td>Member</td></tr>
+<tr style="background-color:GreenYellow"><td>Static</td></tr>
+<tr style="background-color:Lime"><td>Constructor</td></tr>
+<tr style="background-color:Yellow"><td>Common</td></tr>
+<tr style="background-color:Gold"><td>Common/Static</td></tr>
+</table>
+</html></body>
