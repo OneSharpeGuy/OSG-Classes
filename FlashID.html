@@ -215,6 +215,19 @@ static FlashID Brief()
 <tr style="background-color:GreenYellow">
 <td>
 
+CreateTemporaryFile
+
+</td>
+<td>
+Create a new Temporary File using a FlashID for the BaseName
+</td>
+<td>
+static System.IO.FileSystemInfo CreateTemporaryFile()<br>static System.IO.FileSystemInfo CreateTemporaryFile(string Extension)
+</td>
+</tr>
+<tr style="background-color:GreenYellow">
+<td>
+
 help
 
 </td>
@@ -342,163 +355,160 @@ static bool ReferenceEquals(System.Object objA, System.Object objB)
 </table>
 <pre style="background-color: #EDEEEF;">
 
-			.EXAMPLE
-			
-			[FlashID]::new()
-			
-			4C47-6B62-WXTZ
-			
-			
-			.EXAMPLE
-			
-			[FlashID]::new($null)
-			4C47-6B63-RNYQ
-			
-			
-			.EXAMPLE
-			
-			[FlashID]::Brief()
-			4C47-6B6295
-			
-			
-			.EXAMPLE
-			
-			[FlashID]::Pop()
-			4C47-6B63-QWYI
-			
-			
-			.EXAMPLE
-			
-			[FlashID]::Bare()
-			4C476B64QUOI
-			
-			
-			.EXAMPLE
-			
-			[FlashID]::new().ToString()
-			4C47-6B65-HXZM
-			
-			
-			.EXAMPLE
-			
-			[string][FlashID]::new()
-			4C47-6B66-LVYQ
-			
-			
-			.EXAMPLE
-			
-			[FlashID]::new(@{ BriefMode = $true })
-			4C47-6B62AE
-			
-			
-			.EXAMPLE
-			
-			[FlashID]::new(@{ Length = '3'; BriefMode = $false; Seperator = ':' })
-			4C47:6B7:SRZV
-			
-			
-			.EXAMPLE
-			
-			[FlashID]::new(@{ Length = '1' })
-			4C47-7-IYUJ
-			
-			
-			.EXAMPLE
-			
-			(1..10).ForEach{[FlashID]::New()}
-			4C47-6B62-PQNI
-			4C47-6B63-MYLZ
-			4C47-6B64-IJGV
-			4C47-6B65-VHGK
-			4C47-6B66-LTVM
-			4C47-6B67-HPYL
-			4C47-6B68-NKOG
-			4C47-6B69-LMPY
-			4C47-6B6A-JQHW
-			4C47-6B6B-HINY
-			
-			
-			.EXAMPLE
-			
-			[FlashID]::new() | Format-Table
-			
-			
-			
-			HexDate PartialDay Adjunct Initiated            
-			------- ---------- ------- ---------            
-			4C47    6B6C       ZYHV    6/19/2023 11:04:02 AM
-			
-			
-			
-			
-			.EXAMPLE
-			
-			[FlashID]::new() | Format-List
-			
-			
-			HexDate    : 4C47
-			PartialDay : 6B6D
-			Adjunct    : RIMH
-			Initiated  : 6/19/2023 11:04:02 AM
-			
-			
-			
-			
-			
-			.EXAMPLE
-			
-			[FlashID]::new() | Select-Object * | Format-List
-			
-			
-			HexDate    : 4C47
-			PartialDay : 6B6E
-			Adjunct    : JRSO
-			Initiated  : 6/19/2023 11:04:02 AM
-			Zulu       : 6/19/2023 3:04:02 PM
-			Span       : 19527.10:04:02.8181256
-			Lap        : 5
-			Length     : 4
-			BriefMode  : False
-			Expanded   : True
-			Summary    : 4C47-6B6E-JRSO
-			
-			
-			
-			
-			
-			.EXAMPLE
-			
-			[FlashID]::new(@{ BriefMode = $true; Epoch = '1/1/1900' })
-			
-			B026-6B62DE
-			
-			
-			.EXAMPLE
-			
-			[FlashID]::new(@{ Epoch = '1/1/1950' })
-			68D0-6B63-QVKG
-			
-			
-			.EXAMPLE
-			
-			[FlashID]::new(@{ Epoch = '1/1/2000' })
-			217A-6B64-YMHX
-			
-			
-			.EXAMPLE
-			
-			[FlashID]::new(@{ Epoch = '1/20/2009' })
-			148F-6B65-MYZR
-			
-			
-			.EXAMPLE
-			
-			[FlashID]::new(@{ Epoch = '1/20/2021' })
-			0370-6B66-SJIK
-			
-			
-			
-			
+.EXAMPLE
+
+[FlashID]::new()
+
+4C47-6B62-WXTZ
+
+
+.EXAMPLE
+
+[FlashID]::new($null)
+4C47-6B63-RNYQ
+
+
+.EXAMPLE
+
+[FlashID]::Brief()
+4C47-6B6295
+
+
+.EXAMPLE
+
+[FlashID]::Pop()
+4C47-6B63-QWYI
+
+
+.EXAMPLE
+
+[FlashID]::Bare()
+4C476B64QUOI
+
+
+.EXAMPLE
+
+[FlashID]::new().ToString()
+4C47-6B65-HXZM
+
+
+.EXAMPLE
+
+[string][FlashID]::new()
+4C47-6B66-LVYQ
+
+
+.EXAMPLE
+
+[FlashID]::new(@{ BriefMode = $true })
+4C47-6B62AE
+
+
+.EXAMPLE
+
+[FlashID]::new(@{ Length = '3'; BriefMode = $false; Seperator = ':' })
+4C47:6B7:SRZV
+
+
+.EXAMPLE
+
+[FlashID]::new(@{ Length = '1' })
+4C47-7-IYUJ
+
+
+.EXAMPLE
+
+(1..10).ForEach{[FlashID]::New()}
+4C47-6B62-PQNI
+4C47-6B63-MYLZ
+4C47-6B64-IJGV
+4C47-6B65-VHGK
+4C47-6B66-LTVM
+4C47-6B67-HPYL
+4C47-6B68-NKOG
+4C47-6B69-LMPY
+4C47-6B6A-JQHW
+4C47-6B6B-HINY
+
+
+.EXAMPLE
+
+[FlashID]::new() | Format-Table
+
+
+
+HexDate PartialDay Adjunct Initiated            
+------- ---------- ------- ---------            
+4C47    6B6C       ZYHV    6/19/2023 11:04:02 AM
+
+
+
+
+.EXAMPLE
+
+[FlashID]::new() | Format-List
+
+
+HexDate    : 4C47
+PartialDay : 6B6D
+Adjunct    : RIMH
+Initiated  : 6/19/2023 11:04:02 AM
+
+
+
+
+
+.EXAMPLE
+
+[FlashID]::new() | Select-Object * | Format-List
+
+
+HexDate    : 4C47
+PartialDay : 6B6E
+Adjunct    : JRSO
+Initiated  : 6/19/2023 11:04:02 AM
+Zulu       : 6/19/2023 3:04:02 PM
+Span       : 19527.10:04:02.8181256
+Lap        : 5
+Length     : 4
+BriefMode  : False
+Expanded   : True
+Summary    : 4C47-6B6E-JRSO
+
+
+
+
+
+.EXAMPLE
+
+[FlashID]::new(@{ BriefMode = $true; Epoch = '1/1/1900' })
+
+B026-6B62DE
+
+
+.EXAMPLE
+
+[FlashID]::new(@{ Epoch = '1/1/1950' })
+68D0-6B63-QVKG
+
+
+.EXAMPLE
+
+[FlashID]::new(@{ Epoch = '1/1/2000' })
+217A-6B64-YMHX
+
+
+.EXAMPLE
+
+[FlashID]::new(@{ Epoch = '1/20/2009' })
+148F-6B65-MYZR
+
+
+.EXAMPLE
+
+[FlashID]::new(@{ Epoch = '1/20/2021' })
+0370-6B66-SJIK
+
 
 
 </pre>
