@@ -143,6 +143,19 @@ array ExpandCatalogue(System.Object FullPath)
 <tr>
 <td>
 
+Features
+
+</td>
+<td>
+List of Module Features
+</td>
+<td>
+string[] Features()
+</td>
+</tr>
+<tr>
+<td>
+
 Show
 
 </td>
@@ -166,6 +179,19 @@ Returs FullPath of Files that are not currently in memmory
 string[] Unloaded()
 </td>
 </tr>
+<tr style="background-color:GreenYellow">
+<td>
+
+help
+
+</td>
+<td>
+Displays this help file
+</td>
+<td>
+static void help()
+</td>
+</tr>
 <tr style="background-color:Lime">
 <td>
 
@@ -176,7 +202,7 @@ new
 Creates new [Schemata]
 </td>
 <td>
-Schemata new(string Hint)
+Schemata new(string Hint)<br>Schemata new(string Hint, string ModAnchor)
 </td>
 </tr>
 <tr style="background-color:Yellow">
@@ -268,22 +294,4 @@ static bool ReferenceEquals(System.Object objA, System.Object objB)
 <tr style="background-color:Yellow"><td>Common</td></tr>
 <tr style="background-color:Gold"><td>Common/Static</td></tr>
 </table>
-<pre style="background-color: #EDEEEF;">
-    
-    .EXAMPLE
-    
-    # Create an instance of the Schemata class with the module name 'OSGCredentials'.
-    # The Init method will be called to initialize the properties and perform the analysis.
-    $S = [Schemata]::new('OSGPSX')
-
-    # Call the Unloaded method to get the unloaded functions from the catalog.
-    $S.Unloaded().ForEach{
-    Write-Verbose "Dotsourcing '$_'" -Verbose
-    . "$_"
-
-    }
-    $S.Show()
-    $S.Unloaded()
-    $S
-</pre>
 </html></body>
