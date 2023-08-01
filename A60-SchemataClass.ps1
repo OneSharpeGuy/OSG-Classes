@@ -321,7 +321,7 @@ class Schemata{
 
 #New-ClassHelperMaker "[Schemata]::new('OSGPSX')" -Install
 #Remove-Module $((Get-Item (Get-PSCallStack).ScriptName).BaseName)
-
+<#
 $C = [Schemata]::new('OSGPSX')
 $C.Unloaded()
 #>
