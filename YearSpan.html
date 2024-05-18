@@ -1,0 +1,213 @@
+<html>
+<head>
+<style>
+table, th, td {
+  border: 1px solid black;
+  border-spacing: 15px 50px;
+  border-collapse: collapse;
+}
+table {
+  width: 98%;
+}
+th, td {
+  padding: 5px;
+}
+body {
+  font-family: lucida console;
+	margin-left: 38px;
+}
+    
+</style>
+</head>
+<body>
+<title>YearSpan</title>
+<h1>YearSpan</h1>
+<h2>Synopsis</h2>
+    Calculates the difference in years, months, and days between two dates. 
+<h2>Description</h2>
+ Provides a convenient way to calculate and represent time spans in terms of years, months, and days
+<h2>Properties</h2>
+<table>
+<colgroup><col width="10%"><col width="50%"><col></colgroup>
+<tr style="background-color:DeepSkyBlue">
+<th>Name</th>
+<th>Description</th>
+<th>Definition</th>
+</tr>
+<tr>
+<td>
+
+AnniversaryOffsetDays
+
+</td>
+<td>
+      Stores the number of days until the next and previous anniversary.
+</td>
+<td>
+System.Object AnniversaryOffsetDays {get;set;}
+</td>
+</tr>
+<tr>
+<td>
+
+Days
+
+</td>
+<td>
+      Days passed since most recent anniversary month 
+</td>
+<td>
+int Days {get;set;}
+</td>
+</tr>
+<tr>
+<td>
+
+Months
+
+</td>
+<td>
+      Months Passed since most recent anniversary date
+</td>
+<td>
+int Months {get;set;}
+</td>
+</tr>
+<tr>
+<td>
+
+Years
+
+</td>
+<td>
+      Full years passed since StartDate
+</td>
+<td>
+int Years {get;set;}
+</td>
+</tr>
+</table>
+<h2>Methods</h2>
+<table>
+<colgroup><col width="10%"><col width="50%"><col></colgroup>
+<tr style="background-color:DeepSkyBlue">
+<th>Name</th>
+<th>Description</th>
+<th>Definition</th>
+</tr>
+<tr style="background-color:GreenYellow">
+<td>
+
+help
+
+</td>
+<td>
+Displays this help file
+</td>
+<td>
+static void help()
+</td>
+</tr>
+<tr style="background-color:Lime">
+<td>
+
+new
+
+</td>
+<td>
+Creates new [YearSpan]
+</td>
+<td>
+YearSpan new(datetime startDate, datetime endDate)<br>YearSpan new(datetime startDate)
+</td>
+</tr>
+<tr style="background-color:Yellow">
+<td>
+<strong>
+Equals
+</strong>
+</td>
+<td>
+Determines whether the specified object is equal to the current object.
+</td>
+<td>
+bool Equals(System.Object obj)
+</td>
+</tr>
+<tr style="background-color:Yellow">
+<td>
+<strong>
+GetHashCode
+</strong>
+</td>
+<td>
+Returns a hash code for the current object
+</td>
+<td>
+int GetHashCode()
+</td>
+</tr>
+<tr style="background-color:Yellow">
+<td>
+<strong>
+GetType
+</strong>
+</td>
+<td>
+Returns Object type [YearSpan]
+</td>
+<td>
+type GetType()
+</td>
+</tr>
+<tr style="background-color:Yellow">
+<td>
+<strong>
+ToString
+</strong>
+</td>
+<td>
+Returns a string that represents the current object
+</td>
+<td>
+string ToString()
+</td>
+</tr>
+<tr style="background-color:Gold">
+<td>
+<strong>
+Equals
+</strong>
+</td>
+<td>
+Determines whether the specified object instances are considered equal.
+</td>
+<td>
+static bool Equals(System.Object objA, System.Object objB)
+</td>
+</tr>
+<tr style="background-color:Gold">
+<td>
+<strong>
+ReferenceEquals
+</strong>
+</td>
+<td>
+true if objA is the same instance as objB or if both are null; otherwise, false.
+</td>
+<td>
+static bool ReferenceEquals(System.Object objA, System.Object objB)
+</td>
+</tr>
+</table>
+<br>
+<table style="width:10%">
+<tr style="background-color:DeepSkyBlue">
+<th>Legend</th></tr>
+<tr><td>Member</td></tr>
+<tr style="background-color:GreenYellow"><td>Static</td></tr>
+<tr style="background-color:Lime"><td>Constructor</td></tr>
+<tr style="background-color:Yellow"><td>Common</td></tr>
+<tr style="background-color:Gold"><td>Common/Static</td></tr>
+</table>
+</html></body>
