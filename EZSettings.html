@@ -83,7 +83,7 @@ InstanceID
       String representation of FlashID <li>Instance ID of Class Instance that wrote the setting
 </td>
 <td>
-string InstanceID {get;set;}
+FlashID InstanceID {get;set;}
 </td>
 </tr>
 <tr>
@@ -106,7 +106,7 @@ Settings
 
 </td>
 <td>
-      Specified Settings for the module      <li>Key      <li>Value      <li>InstanceID - Matches InstanceID of object when settings was last written      <li>Written - Time setting was last written or Modifed      <li>Version
+      Specified Settings for the module      <li>Key      <li>Value      <li>InstanceID - Matches InstanceID of object when settings was last written      <li>Written - Time setting was last written or Modifed      <li>Version			<li>Contributor - Array of Scripts that Modified the Setting
 </td>
 <td>
 array Settings {get;set;}
@@ -145,6 +145,19 @@ CheckSetting
 </td>
 <td>
 void CheckSetting(string key, System.Object Default)
+</td>
+</tr>
+<tr>
+<td>
+
+GatherLocations
+
+</td>
+<td>
+Build List of Calling Scripts
+</td>
+<td>
+string[] GatherLocations()
 </td>
 </tr>
 <tr>
@@ -254,6 +267,19 @@ void ZapSetting(System.Object key)
 <tr style="background-color:GreenYellow">
 <td>
 
+Fetch
+
+</td>
+<td>
+        Invokes the contructor and returns the Settings HashTable
+</td>
+<td>
+static hashtable Fetch(string pathHint)
+</td>
+</tr>
+<tr style="background-color:GreenYellow">
+<td>
+
 FindConfigurator
 
 </td>
@@ -310,7 +336,7 @@ RMRPath
 
 </td>
 <td>
-        Shortens Full Mod Path to Relative to Mod Root        <li>C:\Users\chuck.sharpe\Documents\WindowsPowerShell\Modules\OSGPSX\Classes\EZSettings.Html        <li>becomes OSGPSX\Classes\EZSettings.Html
+        Shortens Full Mod Path to (R)elative to (M)od (R)oot        <li>C:\Users\chuck.sharpe\Documents\WindowsPowerShell\Modules\OSGPSX\Classes\EZSettings.Html        <li>becomes OSGPSX\Classes\EZSettings.Html
 </td>
 <td>
 static string RMRPath(string Path)
@@ -412,7 +438,7 @@ static bool ReferenceEquals(System.Object objA, System.Object objB)
 <table style="width:10%">
 <tr style="background-color:DeepSkyBlue">
 <th>Legend</th></tr>
-<tr><td>Method/Member</td></tr>
+<tr><td>Member</td></tr>
 <tr style="background-color:GreenYellow"><td>Static</td></tr>
 <tr style="background-color:Lime"><td>Constructor</td></tr>
 <tr style="background-color:Yellow"><td>Common</td></tr>
