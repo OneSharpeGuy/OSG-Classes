@@ -63,6 +63,19 @@ int Months {get;set;}
 <tr>
 <td>
 
+Proximity
+
+</td>
+<td>
+      An array of Anniversaries closest to Target Date      <ul>      <li>Date &nbsp; &nbsp;-  Anniversary Date      <li>Offset &nbsp;-  days to add to anniversary date to arrive at target date      </ul>      Indices      <ul>      <li>[0] Most recent anniversary      <li>[1] Next anniversary      </ul>
+</td>
+<td>
+array Proximity {get;set;}
+</td>
+</tr>
+<tr>
+<td>
+
 TotalDays
 
 </td>
@@ -94,19 +107,6 @@ int Years {get;set;}
 <th>Name</th>
 <th>Description</th>
 <th>Definition</th>
-</tr>
-<tr>
-<td>
-
-Proximity
-
-</td>
-<td>
-      Returns an array of Anniversaries closest to Target Date      <ul>      <li>Date &nbsp; &nbsp;-  Anniversary Date      <li>Offset &nbsp;-  days to add to anniversary date to arrive at target date      </ul>      Indices      <ul>      <li>[0] Most recent anniversary      <li>[1] Next anniversary      </ul>
-</td>
-<td>
-System.Object Proximity()
-</td>
 </tr>
 <tr style="background-color:GreenYellow">
 <td>
@@ -225,6 +225,6 @@ static bool ReferenceEquals(System.Object objA, System.Object objB)
 </table>
 <br><h3>Examples:</h3>
 <p>
-<br/>    $mark = [datetime]((Get-Date).Date).AddDays(-(get-random 9131))<br/>    Write-Verbose $mark -Verbose<br/>    [string][YearSpan]::new($mark)<br/><br/>    [string][YearSpan]::new('9/24/1928','10/7/2017')<br/><br/>    [YearSpan]::new('3/5/1958')<br/><br/>    $([YearSpan]::new('3/5/1958')).Proximity()<br/>    
+<br/>    $mark = [datetime]((Get-Date).Date).AddDays(-(get-random 9131))<br/>    Write-Verbose $mark -Verbose<br/>    [string][YearSpan]::new($mark)<br/><br/>    [string][YearSpan]::new('9/24/1928','10/7/2017')<br/><br/>    [YearSpan]::new('3/5/1958')<br/><br/>   ([YearSpan]::new('3/5/1958')).Proximity |Out-String<br/>    
 </p>
 </html></body>
