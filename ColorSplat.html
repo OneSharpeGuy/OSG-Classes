@@ -128,7 +128,7 @@ Rescind
 
 </td>
 <td>
-  Erase the varilables created in the Invoke method
+Erase the varilables created in the Invoke method
 </td>
 <td>
 void Rescind()
@@ -289,161 +289,127 @@ static bool ReferenceEquals(System.Object objA, System.Object objB)
 <tr style="background-color:Gold"><td>Common/Static</td></tr>
 </table>
 <hr>
-<br><b><i>Example 1:</i></b>
-<br/>
+<br><b><i>Example 1:</i></b><pre>
 
-<br/>
     
-<br/>
     # Example usage of the ColorSplat class.
-<br/>
     $MyStreams = [ColorSplat]::new('Example')
-<br/>
     
-<br/>
     # Define various streams with specific colors.
-<br/>
     $MyStreams.PushStream('Alpha','White','Red')
-<br/>
     $MyStreams.PushStream('Bravo','White','Blue')
-<br/>
     $MyStreams.PushStream('Charlie','Blue','White')
-<br/>
     $MyStreams.PushStream('Delta','White','Green')
-<br/>
     
-<br/>
     # Display the current stream configurations.
-<br/>
     
-<br/>
     $MyStreams.Invoke()
-<br/>
     $MyStreams.Reveal()
-<br/>
    
-<br/>
-<br><b><i>Example 2:</i></b>
-<br/>
+<br><b><i>Example 2:</i></b><pre>
 
-<br/>
     [ColorSplat]::new('Example').Reveal($true)
-<br/>
     [colorsplat]::ShowCase()
-<br/>
    
-<br/>
-<br><b><i>Example 3:</i></b>
-<br/>
+<br><b><i>Example 3:</i></b><pre>
 
-<br/>
-    [ColorSplat]::new('Example').AssertFirehose(@('Alpha|White|Red', 'Bravo|White|Blue', 'Charlie|Blue|White', 'Delta|White|Green', 'Echo|Blue|Green'))
-<br/>
+    [ColorSplat]::new('Example').AssertFirehose(@('Alpha|Red', 'Bravo|White', 'Charlie|Blue', 'Delta|Red|White', 'Echo|Red|Blue', 'Foxtrot|White|Red', 'Golf|White|Blue', 'Hotel|Blue|Red', 'India|Blue|White'))
    
-<br/>
-<br><b><i>Example 4:</i></b>
-<br/>
+<br><b><i>Example 4:</i></b><pre>
 
-<br/>
+    $ColorSplat=[ColorSplat]::New('Example')
+    $ColorSplat.AssertFireHose(@('Alpha|Blue|White','Bravo|White|Blue','Charlie|Red|Blue','Delta|Blue|Red','Echo|Red|White','Foxtrot|White|Red'))
+    $ColorSplat.Reveal($true,$true)
+    #Example Block>
+    
+    <#Example Block
     $ColorSplat = [ColorSplat]::new('Example')
-<br/>
     $Quick = @(@('Alpha', 'White', 'Red'), @('Bravo', 'White', 'Blue'), @('Charlie', 'Blue', 'White'), @('Delta', 'White', 'Green'))
-<br/>
     
-<br/>
     $ColorSplat.PushStreams($quick)
-<br/>
     $ColorSplat.Reveal($true, $true)
-<br/>
    
-<br/>
-<br><b><i>Example 5:</i></b>
-<br/>
+<br><b><i>Example 5:</i></b><pre>
 
-<br/>
+    $ColorSplat = [ColorSplat]::new('Example')
+    $Quick = @(@('Alpha', 'White', 'Red'), @('Bravo', 'White', 'Blue'), @('Charlie', 'Blue', 'White'), @('Delta', 'White', 'Green'))
     
-<br/>
-    $Colors = [Enum]::GetNames('ConsoleColor') |
-<br/>
-    Where-Object { $_ -notmatch 'Dark' } |
-<br/>
-    Sort-Object
-<br/>
-    $Colors += [Enum]::GetNames('ConsoleColor') |
-<br/>
-    Where-Object { $_ -match 'Dark' } |
-<br/>
-    Sort-Object
-<br/>
+    $ColorSplat.PushStreams($quick)
+    $ColorSplat.Reveal($true, $true)
+    #Example Block#>
+<#
+    $ColorSplat = [ColorSplat]::new('ColorSplat')
+    $ColorSplat.Reset()
+    $ColorSplat.PushStream('Header','DarkGray')
+    $ColorSplat.PushStream('Normal','Gray')
     
-<br/>
-    # Generate color combinations
-<br/>
-    $Combos = foreach ($bgColor in $Colors) {
-<br/>
-    foreach ($fgColor in $Colors) {
-<br/>
-    if ($bgColor -ne $fgColor) {
-<br/>
-    "'{0}','{1}'" -f $fgColor, $bgColor
-<br/>
+    $ColorSplat.Reveal($false,$true)
+#>
+
+<#
+    New-ClassHelperMaker -ConstructorString "[ColorSplat]::new('Example')" -ClassPath $psISE.CurrentFile.FullPath -Install
+    
+#>
+<#
+    $ColorSplat = [ColorSplat]::new('Example')
+    $ColorSplat.Reset()
+    $Quick = @(@('Alpha', 'White', 'Red'), @('Bravo', 'White', 'Blue'), @('Charlie', 'Blue', 'White'), @('Delta', 'White', 'Green'))
+    
+    $ColorSplat.PushStreams($quick)
+    $ColorSplat.Reveal($true, $true)
+#>
+<#
+    if (Get-Module OSGPSX) {
+    Remove-Module OSGPSX -Force
     }
-<br/>
-    }
-<br/>
-    }
-<br/>
     
-<br/>
-    # Foreground-only combinations
-<br/>
-    $Combos += $Colors | ForEach-Object { "'$_'" }
-<br/>
+    $ColorSplat = [ColorSplat]::new('Example')
+    $colorsplat.AssertFireHose('Red|Red','White|White|Red','Blue|Blue')
+    $ColorSplat.toNotePad()
+#>
+    <#Example Block
     
-<br/>
-    # Initialize ColorSplat object
-<br/>
-    $colorSplat = [ColorSplat]::new('Sample')
-<br/>
-    $colorSplat.Reset()
-<br/>
-    
-<br/>
-    foreach ($label in @('First', 'Second', 'Third')) {
-<br/>
-    $colors = $Combos | Get-Random
-<br/>
-    $stream = "'$label',$colors"
-<br/>
-    
-<br/>
-    Invoke-Expression   $("`$ColorSplat.PushStream($stream)"  )  
-<br/>
-    $colorArray = $colors -split ','
-<br/>
-    
-<br/>
-    if ($colorArray.Count -gt 1) {
-<br/>
-    $reverseLabel = "${label}Flipped"
-<br/>
-    $reverseStream = "'$reverseLabel',{0},{1}" -f $colorArray[1], $colorArray[0]
-<br/>
-    
-<br/>
-    Invoke-Expression   $("`$ColorSplat.PushStream($reverseStream)"  )  
-<br/>
-    }
-<br/>
-    }
-<br/>
-    
-<br/>
-    $colorSplat.Reveal()
-<br/>
-    
-<br/>
    
-<br/>
-</p>
+$Colors = [Enum]::GetNames('ConsoleColor')
+# Generate color combinations
+$Combos = [System.Collections.Generic.List[string]]::new()
+
+foreach ($bgColor in $Colors) {
+	foreach ($fgColor in $Colors) {
+		if ($bgColor -ne $fgColor -and ($bgColor -notmatch 'Dark' -or $fgColor -notmatch 'Dark')) {
+			$Combos.Add("$fgColor,$bgColor")
+		}
+	}
+}
+
+# Foreground-only combinations, excluding certain colors
+$excludedColors = @('Black', 'DarkRed', 'DarkMagenta')
+$Colors | Where-Object { $_ -notin $excludedColors } | ForEach-Object { $Combos.Add($_) }
+
+# Initialize ColorSplat object
+$colorSplat = [ColorSplat]::new('Sample')
+$colorSplat.Reset()
+
+foreach ($label in @('First', 'Second', 'Third')) {
+	$pair = ($Combos | Get-Random) -split ','
+
+	if ($pair.Count -eq 1) {
+		$colorSplat.PushStream($label, $pair[0])
+	}
+
+ else {
+		$colorSplat.PushStream($label, $pair[0], $pair[1])
+	}
+
+	if ($pair.Count -gt 1) {
+		$colorSplat.PushStream("${label}Flipped", $pair[1], $pair[0])
+	}
+}
+
+$colorSplat.Reveal()
+ 
+
+    
+   
+</pre></p>
 </html></body>

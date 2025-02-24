@@ -87,6 +87,7 @@ class ColorSplat {
 
 	#Stream is an array passed as 'Stream|ForeGround|BackGround'
 	#There can be Several Streams Passes at the same time
+
 	AssertFireHose ([String[]]$Ammo) {
   
 		<#
@@ -478,7 +479,10 @@ class ColorSplat {
 			Invoke-Item $transcriptFile
 		}
 
+		$splatters.Rescind()
+
 	}
+
 	<#
       <!-- [ShowCase]
       Interactive method to display and select color combinations for foreground and background
@@ -631,7 +635,10 @@ Erase the varilables created in the Invoke method
 			$splat = [Ordered]@{}
 			$splat.Name = "$($key)$($tail)"
 			$splat.Scope = $NumericScope
-			Remove-Variable @splat
+			if (Test-Path "Variable:\$($splat.Name)") {
+
+				Remove-Variable @splat
+			}
 		}
 
 	}
@@ -702,46 +709,44 @@ Erase the varilables created in the Invoke method
     $colorsplat.AssertFireHose('Red|Red','White|White|Red','Blue|Blue')
     $ColorSplat.toNotePad()
 #>
-    <#Example Block
-    
-    $Colors = [Enum]::GetNames('ConsoleColor') |
-    Where-Object { $_ -notmatch 'Dark' } |
-    Sort-Object
-    $Colors += [Enum]::GetNames('ConsoleColor') |
-    Where-Object { $_ -match 'Dark' } |
-    Sort-Object
-    
-    # Generate color combinations
-    $Combos = foreach ($bgColor in $Colors) {
-    foreach ($fgColor in $Colors) {
-    if ($bgColor -ne $fgColor) {
-    "'{0}','{1}'" -f $fgColor, $bgColor
-    }
-    }
-    }
-    
-    # Foreground-only combinations
-    $Combos += $Colors | ForEach-Object { "'$_'" }
-    
-    # Initialize ColorSplat object
-    $colorSplat = [ColorSplat]::new('Sample')
-    $colorSplat.Reset()
-    
-    foreach ($label in @('First', 'Second', 'Third')) {
-    $colors = $Combos | Get-Random
-    $stream = "'$label',$colors"
-    
-    Invoke-Expression   $("`$ColorSplat.PushStream($stream)"  )  
-    $colorArray = $colors -split ','
-    
-    if ($colorArray.Count -gt 1) {
-    $reverseLabel = "${label}Flipped"
-    $reverseStream = "'$reverseLabel',{0},{1}" -f $colorArray[1], $colorArray[0]
-    
-    Invoke-Expression   $("`$ColorSplat.PushStream($reverseStream)"  )  
-    }
-    }
-    
-    $colorSplat.Reveal()
-    
-    #Example Block#>
+<#Example Block
+
+$Colors = [Enum]::GetNames('ConsoleColor')
+# Generate color combinations
+$Combos = [System.Collections.Generic.List[string]]::new()
+
+foreach ($bgColor in $Colors) {
+foreach ($fgColor in $Colors) {
+if ($bgColor -ne $fgColor -and ($bgColor -notmatch 'Dark' -or $fgColor -notmatch 'Dark')) {
+$Combos.Add("$fgColor,$bgColor")
+}
+}
+}
+
+# Foreground-only combinations, excluding certain colors
+$excludedColors = @('Black', 'DarkRed', 'DarkMagenta')
+$Colors | Where-Object { $_ -notin $excludedColors } | ForEach-Object { $Combos.Add($_) }
+
+# Initialize ColorSplat object
+$colorSplat = [ColorSplat]::new('Sample')
+$colorSplat.Reset()
+
+foreach ($label in @('First', 'Second', 'Third')) {
+$pair = ($Combos | Get-Random) -split ','
+
+if ($pair.Count -eq 1) {
+$colorSplat.PushStream($label, $pair[0])
+}
+
+else {
+$colorSplat.PushStream($label, $pair[0], $pair[1])
+}
+
+if ($pair.Count -gt 1) {
+$colorSplat.PushStream("${label}Flipped", $pair[1], $pair[0])
+}
+}
+
+$colorSplat.Reveal()
+
+#Example Block#>
