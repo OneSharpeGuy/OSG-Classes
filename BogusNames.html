@@ -20,12 +20,12 @@ body {
 </style>
 </head>
 <body>
-<title>YearSpan</title>
-<h1>YearSpan</h1>
+<title>BogusNames</title>
+<h1>BogusNames</h1>
 <h2>Synopsis</h2>
-    Calculates the difference in years, months, and days between two dates. 
+      A PowerShell class to manage and store custom streams with foreground and background colors.
 <h2>Description</h2>
-    Provides a convenient way to calculate and represent time spans in terms of years, months, and days.<br>    It can be used for tasks like calculating age, tenure, or any duration between two specific events.
+      The <i><b>ColorSplat</b></i> class provides a mechanism to define, manage, and persist custom streams.      These streams are associated with foreground and background colors and can be invoked to       create variables in the script scope.
 <h2>Properties</h2>
 <table>
 <colgroup><col width="10%"><col width="50%"><col></colgroup>
@@ -34,69 +34,28 @@ body {
 <th>Description</th>
 <th>Definition</th>
 </tr>
-<tr>
+<tr style="background-color:GreenYellow">
 <td>
 
-Days
+AllNames
 
 </td>
 <td>
-      Days passed since most recent anniversary month 
 </td>
 <td>
-int Days {get;set;}
+static System.Object AllNames {get;set;}
 </td>
 </tr>
-<tr>
+<tr style="background-color:GreenYellow">
 <td>
 
-Months
-
-</td>
-<td>
-      Months Passed since most recent anniversary date
-</td>
-<td>
-int Months {get;set;}
-</td>
-</tr>
-<tr>
-<td>
-
-Proximity
+Model
 
 </td>
 <td>
-      An array of Anniversaries closest to Target Date      <ul>      <li>Date &nbsp; &nbsp;-  Anniversary Date      <li>Offset &nbsp;-  days to add to anniversary date to arrive at target date      </ul>      Indices      <ul>      <li>[0] Most recent anniversary      <li>[1] Next anniversary      </ul>
 </td>
 <td>
-array Proximity {get;set;}
-</td>
-</tr>
-<tr>
-<td>
-
-TotalDays
-
-</td>
-<td>
-Total number of days elapsed
-</td>
-<td>
-long TotalDays {get;set;}
-</td>
-</tr>
-<tr>
-<td>
-
-Years
-
-</td>
-<td>
-      Full years passed since StartDate
-</td>
-<td>
-int Years {get;set;}
+static string Model {get;set;}
 </td>
 </tr>
 </table>
@@ -108,17 +67,66 @@ int Years {get;set;}
 <th>Description</th>
 <th>Definition</th>
 </tr>
-<tr style="background-color:GreenYellow">
+<tr>
 <td>
 
-help
+ExcludeRecentNames
 
 </td>
 <td>
-Displays this help file
 </td>
 <td>
-static void help()
+array ExcludeRecentNames(System.Object Eligible, System.Object RequestedQty)
+</td>
+</tr>
+<tr>
+<td>
+
+Export
+
+</td>
+<td>
+    Export the stream configurations by setting them as variables in the script scope.
+</td>
+<td>
+void Export()
+</td>
+</tr>
+<tr>
+<td>
+
+GenerateRandomNames
+
+</td>
+<td>
+</td>
+<td>
+array GenerateRandomNames()<br>array GenerateRandomNames(System.Object quantity)<br>array GenerateRandomNames(System.Object quantity, System.Object genderFilter)
+</td>
+</tr>
+<tr>
+<td>
+
+Initialize
+
+</td>
+<td>
+        Prepares the environment by creating necessary directories and loading existing configurations from disk.
+</td>
+<td>
+void Initialize()
+</td>
+</tr>
+<tr>
+<td>
+
+SelectRandomNames
+
+</td>
+<td>
+</td>
+<td>
+array SelectRandomNames(System.Object quantity, System.Object genderFilter)
 </td>
 </tr>
 <tr style="background-color:Lime">
@@ -128,10 +136,10 @@ new
 
 </td>
 <td>
-Creates new [YearSpan]
+Creates new [BogusNames]
 </td>
 <td>
-YearSpan new(datetime startDate, datetime endDate)<br>YearSpan new(datetime startDate)
+BogusNames new()<br>BogusNames new(System.Object quantity)<br>BogusNames new(System.Object quantity, System.Object genderFilter)
 </td>
 </tr>
 <tr style="background-color:Yellow">
@@ -167,7 +175,7 @@ GetType
 </strong>
 </td>
 <td>
-Returns Object type [YearSpan]
+Returns Object type [BogusNames]
 </td>
 <td>
 type GetType()
@@ -230,39 +238,53 @@ static bool ReferenceEquals(System.Object objA, System.Object objB)
 <br/>
 
 <br/>
-    $mark = [datetime]((Get-Date).Date).AddDays(-(get-random 9131))
+    # Example usage of the ColorSplat class.
 <br/>
-    Write-Verbose $mark -Verbose
-<br/>
-    [string][YearSpan]::new($mark)
+    $MyStreams = [ColorSplat]::new('Example')
 <br/>
 
 <br/>
-    [string][YearSpan]::new('9/24/1928','10/7/2017')
+    # Define various streams with specific colors.
+<br/>
+    $MyStreams.PushStream('Alpha','White','Red')
+<br/>
+    $MyStreams.PushStream('Bravo','White','Blue')
+<br/>
+    $MyStreams.PushStream('Charlie','Blue','White')
+<br/>
+    $MyStreams.PushStream('Delta','Green')
 <br/>
 
 <br/>
-    [YearSpan]::new('3/5/1958')
+    # Display the current stream configurations.
 <br/>
 
 <br/>
-   ([YearSpan]::new('3/5/1958')).Proximity |Out-String
+    $MyStreams.Export()
 <br/>
-    
+    $MyStreams.Reveal()
 <br/>
 <br><b><i>Example 2:</i></b>
 <br/>
 
 <br/>
-$TestDay=((Get-Date).Date).AddDays(-3).AddYears(-1).AddMonths(-2)
+    [ColorSplat]::new('Example').Reveal($true)
 <br/>
-$TestDay
+    [colorsplat]::ShowCase()
 <br/>
-$Span=[YearSpan]::new($TestDay)
+<br><b><i>Example 3:</i></b>
 <br/>
-$Span|Format-Custom
+
 <br/>
-$TestDay.AddYears($Span.Years).AddMonths($Span.Months).AddDays($Span.Days)
+$ColorSplat = [ColorSplat]::new('Example')
+<br/>
+$Quick=@(@(@('Alpha','White','Red'),@('Bravo','White','Blue'),@('Charlie','Blue','White'),@('Delta','Green'))
+<br/>
+)
+<br/>
+$ColorSplat.PushStreams($quick)
+<br/>
+$ColorSplat.Reveal()
 <br/>
 </p>
 </html></body>

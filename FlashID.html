@@ -21,11 +21,11 @@ body {
 </head>
 <body>
 <title>FlashID</title>
-<h1>FlashID</h1>
+<h1>[FlashID]</h1>
 <h2>Synopsis</h2>
       Generates a unique Instance ID
 <h2>Description</h2>
-      Generates a unique Instance ID based on time eLapsed since the DOS Epoch<br>  4B1C-2738-PQNJ<br><br>  The first Section is a 4 character Hexidecimal representation of the Days eLapsed since 1/1/1970<br>  The second section is a representation of the time passed in the current day.  <br>The third section is a 4 Character (Adjunct) Alpha string, which will insure that the FlashID is unique across different installations. <br>(Adjunct string will not include and digits or characters used in Hexidecimal notation, [0-9][A-F])<br>      <br>Note also, [FlashID] is based on GMT
+      Generates a unique Instance ID based on time eLapsed since the DOS Epoch<br>  4B1C-2738-PQNJ<br><br>The first Section is a 4 character Hexidecimal representation of the Days eLapsed since 1/1/1970<br>  The second section is a representation of the time passed in the current day.  <br>The third section is a 4 Character (Adjunct) Alpha string, which will insure that the FlashID is unique across different installations. <br>(Adjunct string will not include and digits or characters used in Hexidecimal notation, [0-9][A-F])<br>      <br>Note also, [FlashID] is based on GMT
 <h2>Properties</h2>
 <table>
 <colgroup><col width="10%"><col width="50%"><col></colgroup>
@@ -80,7 +80,7 @@ HexDate
 
 </td>
 <td>
-      4 Character hexadecimal representation of Days eLapsed since the DOS Epoch
+      4 Character hexadecimal representation <br>of Days elapsed since the DOS Epoch
 </td>
 <td>
 string HexDate {get;set;}
@@ -132,7 +132,7 @@ PartialDay
 
 </td>
 <td>
-      Part of day eLapsed since midnight
+      Part of day elapsed since midnight
 </td>
 <td>
 string PartialDay {get;set;}
@@ -206,7 +206,7 @@ Brief
 
 </td>
 <td>
-                 Default FlashID without Adjunct Section        * Note: Because Brief Mode is a representaion of time passed in a day,           unique FlashID can not be guaranteed in brief mode with a fast processor
+                 Default FlashID without Adjunct Section        <UL><li>Note: Because Brief Mode is a representaion of time passed in a day,           unique FlashID can not be guaranteed in brief mode with a fast processor
 </td>
 <td>
 static string Brief()
@@ -236,6 +236,19 @@ Pop
 </td>
 <td>
 static string Pop()<br>static string Pop(hashtable options)
+</td>
+</tr>
+<tr style="background-color:GreenYellow">
+<td>
+
+TempFile
+
+</td>
+<td>
+Creates a new Temporary file with a FlashID style FileName
+</td>
+<td>
+static System.IO.FileInfo TempFile(System.Object Extension)<br>static System.IO.FileInfo TempFile()
 </td>
 </tr>
 <tr style="background-color:Lime">

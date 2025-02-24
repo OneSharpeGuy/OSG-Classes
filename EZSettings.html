@@ -21,7 +21,7 @@ body {
 </head>
 <body>
 <title>EZSettings</title>
-<h1>EZSettings</h1>
+<h1>[EZSettings]</h1>
 <h2>Synopsis</h2>
       Retrives Module Settings
 <h2>Description</h2>
@@ -84,6 +84,19 @@ InstanceID
 </td>
 <td>
 string InstanceID {get;set;}
+</td>
+</tr>
+<tr>
+<td>
+
+ModuleFileName
+
+</td>
+<td>
+Full path to PowerShell module file
+</td>
+<td>
+string ModuleFileName {get;set;}
 </td>
 </tr>
 <tr>
@@ -306,6 +319,19 @@ static string NormalizeKey(string target)
 <tr style="background-color:GreenYellow">
 <td>
 
+Retrieve
+
+</td>
+<td>
+      Alternative factory method, sort of an Alias for [EZSettings]::new()<br>      (New sort of implies to me, you're creating a new configuration,<br>      retrive makes it clear that the configuration, is by default, already be defined)
+</td>
+<td>
+static EZSettings Retrieve(System.Object pathHint)
+</td>
+</tr>
+<tr style="background-color:GreenYellow">
+<td>
+
 RMRPath
 
 </td>
@@ -412,7 +438,7 @@ static bool ReferenceEquals(System.Object objA, System.Object objB)
 <table style="width:10%">
 <tr style="background-color:DeepSkyBlue">
 <th>Legend</th></tr>
-<tr><td>Method/Member</td></tr>
+<tr><td>Member</td></tr>
 <tr style="background-color:GreenYellow"><td>Static</td></tr>
 <tr style="background-color:Lime"><td>Constructor</td></tr>
 <tr style="background-color:Yellow"><td>Common</td></tr>
