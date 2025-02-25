@@ -611,12 +611,12 @@ class ColorSplat {
         
         $streams = $this.DefinedStreams
 		#>
-		$NumericScope = (Get-PSCallStack).Count - 1
+		
 		foreach ($key in $streams.Keys) {
 			$splat = [Ordered]@{}
 			$splat.Name = "$($key)$($tail)"
 			$splat.Value = $($streams.$key)
-			$splat.Scope = $NumericScope
+			$splat.Scope = 'Global'
 			Set-Variable @splat
 		}
 
@@ -634,7 +634,7 @@ Erase the varilables created in the Invoke method
 		foreach ($key in $streams.Keys) {
 			$splat = [Ordered]@{}
 			$splat.Name = "$($key)$($tail)"
-			$splat.Scope = $NumericScope
+			$splat.Scope = 'Global'
 			if (Test-Path "Variable:\$($splat.Name)") {
 
 				Remove-Variable @splat
