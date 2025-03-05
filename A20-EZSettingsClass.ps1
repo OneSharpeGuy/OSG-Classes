@@ -388,67 +388,68 @@ class EZSettings {
 
 	EZSettings ([string]$pathHint) { $this.Init($pathHint, $false) }
 	EZSettings ([string]$pathHint, [bool]$reset) { $this.Init($pathHint, $reset) }
-	hidden Init ([string]$path, [bool]$reset) {
-		$this.DotFolder = $path
-		$this.Invocation = $MyInvocation
-		if ($this.Invocation.CommandOrigin -ne 'Internal') {
-			if (!(Test-Path $path)) {
-				$this.DotFolder = (Split-Path $this.Invocation.InvocationName)
-			}
-		}
-		if (!(Test-Path $this.DotFolder) -or ($env:PSModulePath.Split(';') -match [regex]::Escape($this.DotFolder))) {
-			$this.DotFolder = (Join-Path ([EZSettings]::ModRoot) $path)
-			if (!(Test-Path $this.DotFolder)) {
-				Write-Error "Specified path [$($path)] does not yield a valid folder [$($this.DotFolder)]"
-			}
+  hidden Init ([string]$path, [bool]$reset) {
+    $this.DotFolder = $path
+    $this.Invocation = $MyInvocation
+    if ($this.Invocation.CommandOrigin -ne 'Internal') {
+      if (!(Test-Path $path)) {
+        $this.DotFolder = (Split-Path $this.Invocation.InvocationName)
+      }
+    }
+    if (!(Test-Path $this.DotFolder) -or ($env:PSModulePath.Split(';') -match [regex]::Escape($this.DotFolder))) {
+      $this.DotFolder = (Join-Path ([EZSettings]::ModRoot) $path)
+      if (!(Test-Path $this.DotFolder)) {
+        Write-Error "Specified path [$($path)] does not yield a valid folder [$($this.DotFolder)]"
+      }
 
-			if (!($this.DotFolder = ([EZSettings]::ModRoot))) {
-				Write-Error "Specified path can not be [$([EZSettings]::ModRoot)]"
-			}
+      if (!($this.DotFolder = ([EZSettings]::ModRoot))) {
+        Write-Error "Specified path can not be [$([EZSettings]::ModRoot)]"
+      }
 
-			if (!($this.DotFolder -match [regex]::Escape([EZSettings]::ModRoot))) {
-				Write-Error "Specified path must be within the [$([EZSettings]::ModRoot)] tree"
+      if (!($this.DotFolder -match [regex]::Escape([EZSettings]::ModRoot))) {
+        Write-Error "Specified path must be within the [$([EZSettings]::ModRoot)] tree"
 
-			}
-		}
+      }
+    }
 
-		$this.ModuleHome = [EZSettings]::FindModuleHome($path)
-		if (!$this.ModuleHome) {
-			$this.ModuleHome = Join-Path ([EZSettings]::ModRoot) (Split-Path $path -Leaf)
-		}
+    $this.ModuleHome = [EZSettings]::FindModuleHome($path)
+    if (!$this.ModuleHome) {
+      $this.ModuleHome = Join-Path ([EZSettings]::ModRoot) (Split-Path $path -Leaf)
+    }
 
-		$this.ModuleName = (Split-Path $This.ModuleHome -Leaf)
+    $this.ModuleName = (Split-Path $This.ModuleHome -Leaf)
 
-		$this.Configurator = [EZSettings]::FindConfigurator($this.ModuleHome)
-		$this.FileName = Join-Path $This.ModuleHome 'ezSettings.xml'
-		#$this.ModuleManifest = (Get-ChildItem $this.ModuleHome -Filter '*.psd1' | Where-Object Name -EQ $this.ModuleName).FullName
-		$this.ModuleManifest = (Get-ChildItem $this.ModuleHome -Filter '*.psd1' | Where-Object BaseName -EQ $this.ModuleName).FullName
-		$this.ModuleFileName = (Import-PowerShellDataFile $this.ModuleManifest).RootModule
-		if ($this.ModuleFileName.Split('\').Count -eq 1) {
-			$this.ModuleFileName = Join-Path $this.ModuleHome $this.ModuleFileName
-		}
+    $this.Configurator = [EZSettings]::FindConfigurator($this.ModuleHome)
+    $this.FileName = Join-Path $This.ModuleHome 'ezSettings.xml'
+    #$this.ModuleManifest = (Get-ChildItem $this.ModuleHome -Filter '*.psd1' | Where-Object Name -EQ $this.ModuleName).FullName
+    $this.ModuleManifest = (Get-ChildItem $this.ModuleHome -Filter '*.psd1' | Where-Object BaseName -EQ $this.ModuleName).FullName
+    if( $this.ModuleManifest){
+    $this.ModuleFileName = (Import-PowerShellDataFile $this.ModuleManifest).RootModule
+    if ($this.ModuleFileName.Split('\').Count -eq 1) {
+      $this.ModuleFileName = Join-Path $this.ModuleHome $this.ModuleFileName
+    }
+    }
+    if ($reset) {
+      if (Test-Path $this.FileName) {
+        Remove-Item $this.FileName -Force
+      }
+    }
 
-		if ($reset) {
-			if (Test-Path $this.FileName) {
-				Remove-Item $this.FileName -Force
-			}
-		}
+    if (Test-Path $this.FileName) {
+      $this.settings += Import-Clixml $this.FileName
 
-		if (Test-Path $this.FileName) {
-			$this.settings += Import-Clixml $this.FileName
+    }
 
-		}
+    $this.InstanceID = [FlashID]::pop()
+    $this.CheckSetting('Module Home', $this.ModuleHome)
+    $this.CheckSetting('Module Name', $this.ModuleName)
 
-		$this.InstanceID = [FlashID]::pop()
-		$this.CheckSetting('Module Home', $this.ModuleHome)
-		$this.CheckSetting('Module Name', $this.ModuleName)
+    $this.CheckSetting('Module Include Folder', (Join-Path $this.ModuleHome 'Include'))
+    $this.CheckSetting('Module Public Folder', (Join-Path $this.ReadSetting('Module Include Folder') Export))
+    $this.CheckSetting('Module Private Folder', (Join-Path $this.ReadSetting('Module Include Folder') Private))
+    $this.CheckSetting('Module Limited Access Folder', (Join-Path $this.ReadSetting('Module Home') Local))
 
-		$this.CheckSetting('Module Include Folder', (Join-Path $this.ModuleHome 'Include'))
-		$this.CheckSetting('Module Public Folder', (Join-Path $this.ReadSetting('Module Include Folder') Export))
-		$this.CheckSetting('Module Private Folder', (Join-Path $this.ReadSetting('Module Include Folder') Private))
-		$this.CheckSetting('Module Limited Access Folder', (Join-Path $this.ReadSetting('Module Home') Local))
-
-	}
+  }
 
 	[void] static help () {
     (Get-ChildItem (Join-Path ($env:PSModulePath -split ';' -match $env:USERNAME) 'OSGPSX') -Recurse |

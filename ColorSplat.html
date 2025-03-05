@@ -73,6 +73,19 @@ FileName
 string FileName {get;set;}
 </td>
 </tr>
+<tr>
+<td>
+
+NewLineSuppression
+
+</td>
+<td>
+     <ul><li>Unless New Line suppression is set to True before the stream is pushed, NoNewLine=$true is Added the the ColorSplat Variable     <li>This can be overriden by addint a trailing Exclamation Point to either the Stream name or Either color 
+</td>
+<td>
+bool NewLineSuppression {get;set;}
+</td>
+</tr>
 </table>
 <h2>Methods</h2>
 <table>
@@ -85,14 +98,14 @@ string FileName {get;set;}
 <tr>
 <td>
 
-AssertFireHose
+AssertStream
 
 </td>
 <td>
-        <ul><li>Push multiple streams as once        <li>Streams are of the form 'Stream|ForeGround|BackGround'
+        Adds or updates streams with specific color configurations.
 </td>
 <td>
-void AssertFireHose(string[] Ammo)
+void AssertStream(System.Object StreamString)
 </td>
 </tr>
 <tr>
@@ -111,24 +124,11 @@ void Invoke()
 <tr>
 <td>
 
-PushStream
-
-</td>
-<td>
-        Adds or updates streams with specific color configurations.
-</td>
-<td>
-void PushStream(string stream, string foreground)<br>void PushStream(string stream, string foreground, string background)
-</td>
-</tr>
-<tr>
-<td>
-
 Rescind
 
 </td>
 <td>
-Erase the varilables created in the Invoke method
+        Erase the varilables created in the Invoke method
 </td>
 <td>
 void Rescind()
@@ -305,16 +305,13 @@ static bool ReferenceEquals(System.Object objA, System.Object objB)
     
     $MyStreams.Invoke()
     $MyStreams.Reveal()
-   
 <br><b><i>Example 2:</i></b><pre>
 
     [ColorSplat]::new('Example').Reveal($true)
     [colorsplat]::ShowCase()
-   
 <br><b><i>Example 3:</i></b><pre>
 
     [ColorSplat]::new('Example').AssertFirehose(@('Alpha|Red', 'Bravo|White', 'Charlie|Blue', 'Delta|Red|White', 'Echo|Red|Blue', 'Foxtrot|White|Red', 'Golf|White|Blue', 'Hotel|Blue|Red', 'India|Blue|White'))
-   
 <br><b><i>Example 4:</i></b><pre>
 
     $ColorSplat=[ColorSplat]::New('Example')
@@ -328,7 +325,6 @@ static bool ReferenceEquals(System.Object objA, System.Object objB)
     
     $ColorSplat.PushStreams($quick)
     $ColorSplat.Reveal($true, $true)
-   
 <br><b><i>Example 5:</i></b><pre>
 
     $ColorSplat = [ColorSplat]::new('Example')
@@ -336,7 +332,7 @@ static bool ReferenceEquals(System.Object objA, System.Object objB)
     
     $ColorSplat.PushStreams($quick)
     $ColorSplat.Reveal($true, $true)
-    #Example Block#>
+#Example Block#>
 <#
     $ColorSplat = [ColorSplat]::new('ColorSplat')
     $ColorSplat.Reset()
@@ -367,19 +363,18 @@ static bool ReferenceEquals(System.Object objA, System.Object objB)
     $colorsplat.AssertFireHose('Red|Red','White|White|Red','Blue|Blue')
     $ColorSplat.toNotePad()
 #>
-    <#Example Block
-    
-   
+<#Example Block
+
 $Colors = [Enum]::GetNames('ConsoleColor')
 # Generate color combinations
 $Combos = [System.Collections.Generic.List[string]]::new()
 
 foreach ($bgColor in $Colors) {
-	foreach ($fgColor in $Colors) {
-		if ($bgColor -ne $fgColor -and ($bgColor -notmatch 'Dark' -or $fgColor -notmatch 'Dark')) {
-			$Combos.Add("$fgColor,$bgColor")
-		}
-	}
+  foreach ($fgColor in $Colors) {
+    if ($bgColor -ne $fgColor -and ($bgColor -notmatch 'Dark' -or $fgColor -notmatch 'Dark')) {
+      $Combos.Add("$fgColor,$bgColor")
+    }
+  }
 }
 
 # Foreground-only combinations, excluding certain colors
@@ -390,26 +385,24 @@ $Colors | Where-Object { $_ -notin $excludedColors } | ForEach-Object { $Combos.
 $colorSplat = [ColorSplat]::new('Sample')
 $colorSplat.Reset()
 
-foreach ($label in @('First', 'Second', 'Third')) {
-	$pair = ($Combos | Get-Random) -split ','
+foreach ($label in @('First!', 'Second')) {
+  $pair = ($Combos | Get-Random) -split ','
 
-	if ($pair.Count -eq 1) {
-		$colorSplat.PushStream($label, $pair[0])
-	}
+  if ($pair.Count -eq 1) {
+    $colorSplat.PushStream("$label", $pair[0])
+  }
 
- else {
-		$colorSplat.PushStream($label, $pair[0], $pair[1])
-	}
+  else {
+    $colorSplat.PushStream($label, $pair[0], $pair[1])
+  }
 
-	if ($pair.Count -gt 1) {
-		$colorSplat.PushStream("${label}Flipped", $pair[1], $pair[0])
-	}
+  if ($pair.Count -gt 1) {
+    
+    $colorSplat.PushStream("$($label -replace "!$")Flipped", $pair[1], $pair[0])
+  }
 }
 
-$colorSplat.Reveal()
- 
+$colorSplat.Reveal($false,$true)
 
-    
-   
 </pre></p>
 </html></body>
