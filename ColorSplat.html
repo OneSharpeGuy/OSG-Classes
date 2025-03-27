@@ -5,6 +5,7 @@ table, th, td {
   border: 1px solid black;
   border-spacing: 15px 50px;
   border-collapse: collapse;
+    font-size: 12px;
 }
 table {
   width: 98%;
@@ -14,6 +15,7 @@ th, td {
 }
 body {
   font-family: lucida console;
+  font-size: 12px;
 	margin-left: 38px;
 }
     
@@ -25,7 +27,7 @@ body {
 <h2>Synopsis</h2>
       A PowerShell class to manage and store custom streams with foreground and background colors.
 <h2>Description</h2>
-      The <i><b>      <Font Color='DodgerBlue' Size="+1">Color</Font><Font Size="+1" Color='Red'>Splat</font>      </b></i> class provides a mechanism to define, manage, and persist custom streams.      These streams are associated with foreground and background colors and can be invoked to       create variables in the script scope.
+      The <i><b>      <Font Color='DodgerBlue' >Color</Font><Font Color='Red'>Splat</font>      </b></i> class provides a mechanism to define, manage, and persist custom streams.      These streams are associated with foreground and background colors and can be invoked to       create variables in the script scope.
 <h2>Properties</h2>
 <table>
 <colgroup><col width="10%"><col width="50%"><col></colgroup>
@@ -76,14 +78,14 @@ string FileName {get;set;}
 <tr>
 <td>
 
-NewLineSuppression
+NoNewLineDefault
 
 </td>
 <td>
-     <ul><li>Unless New Line suppression is set to True before the stream is pushed, NoNewLine=$true is Added the the ColorSplat Variable     <li>This can be overriden by addint a trailing Exclamation Point to either the Stream name or Either color 
+  Determines if -NoNewLine is added to the output color stream
 </td>
 <td>
-bool NewLineSuppression {get;set;}
+bool NoNewLineDefault {get;set;}
 </td>
 </tr>
 </table>
@@ -98,14 +100,27 @@ bool NewLineSuppression {get;set;}
 <tr>
 <td>
 
-AssertStream
+AssertFireHose
 
 </td>
 <td>
-        Adds or updates streams with specific color configurations.
+        <ul><li>Push multiple streams as once        <li>Streams are of the form 'Stream|ForeGround|BackGround'
 </td>
 <td>
-void AssertStream(System.Object StreamString)
+void AssertFireHose(string StreamString)
+</td>
+</tr>
+<tr>
+<td>
+
+Exemplify
+
+</td>
+<td>
+      Display the results of Reveal in a Text Document
+</td>
+<td>
+void Exemplify()
 </td>
 </tr>
 <tr>
@@ -314,95 +329,64 @@ static bool ReferenceEquals(System.Object objA, System.Object objB)
     [ColorSplat]::new('Example').AssertFirehose(@('Alpha|Red', 'Bravo|White', 'Charlie|Blue', 'Delta|Red|White', 'Echo|Red|Blue', 'Foxtrot|White|Red', 'Golf|White|Blue', 'Hotel|Blue|Red', 'India|Blue|White'))
 <br><b><i>Example 4:</i></b><pre>
 
-    $ColorSplat=[ColorSplat]::New('Example')
-    $ColorSplat.AssertFireHose(@('Alpha|Blue|White','Bravo|White|Blue','Charlie|Red|Blue','Delta|Blue|Red','Echo|Red|White','Foxtrot|White|Red'))
-    $ColorSplat.Reveal($true,$true)
-    #Example Block>
-    
-    <#Example Block
-    $ColorSplat = [ColorSplat]::new('Example')
-    $Quick = @(@('Alpha', 'White', 'Red'), @('Bravo', 'White', 'Blue'), @('Charlie', 'Blue', 'White'), @('Delta', 'White', 'Green'))
-    
-    $ColorSplat.PushStreams($quick)
-    $ColorSplat.Reveal($true, $true)
-<br><b><i>Example 5:</i></b><pre>
-
-    $ColorSplat = [ColorSplat]::new('Example')
-    $Quick = @(@('Alpha', 'White', 'Red'), @('Bravo', 'White', 'Blue'), @('Charlie', 'Blue', 'White'), @('Delta', 'White', 'Green'))
-    
-    $ColorSplat.PushStreams($quick)
-    $ColorSplat.Reveal($true, $true)
-#Example Block#>
-<#
     $ColorSplat = [ColorSplat]::new('ColorSplat')
     $ColorSplat.Reset()
+    $ColorSplat.NewLineSuppression=$true
     $ColorSplat.PushStream('Header','DarkGray')
     $ColorSplat.PushStream('Normal','Gray')
     
     $ColorSplat.Reveal($false,$true)
-#>
+<br><b><i>Example 5:</i></b><pre>
 
-<#
-    New-ClassHelperMaker -ConstructorString "[ColorSplat]::new('Example')" -ClassPath $psISE.CurrentFile.FullPath -Install
     
-#>
-<#
-    $ColorSplat = [ColorSplat]::new('Example')
-    $ColorSplat.Reset()
-    $Quick = @(@('Alpha', 'White', 'Red'), @('Bravo', 'White', 'Blue'), @('Charlie', 'Blue', 'White'), @('Delta', 'White', 'Green'))
-    
-    $ColorSplat.PushStreams($quick)
-    $ColorSplat.Reveal($true, $true)
-#>
-<#
     if (Get-Module OSGPSX) {
     Remove-Module OSGPSX -Force
     }
     
     $ColorSplat = [ColorSplat]::new('Example')
     $colorsplat.AssertFireHose('Red|Red','White|White|Red','Blue|Blue')
-    $ColorSplat.toNotePad()
-#>
-<#Example Block
+    $ColorSplat.Exemplify()
+<br><b><i>Example 6:</i></b><pre>
 
-$Colors = [Enum]::GetNames('ConsoleColor')
-# Generate color combinations
-$Combos = [System.Collections.Generic.List[string]]::new()
-
-foreach ($bgColor in $Colors) {
-  foreach ($fgColor in $Colors) {
+    
+    $Colors = [Enum]::GetNames('ConsoleColor')
+    # Generate color combinations
+    $Combos = [System.Collections.Generic.List[string]]::new()
+    
+    foreach ($bgColor in $Colors) {
+    foreach ($fgColor in $Colors) {
     if ($bgColor -ne $fgColor -and ($bgColor -notmatch 'Dark' -or $fgColor -notmatch 'Dark')) {
-      $Combos.Add("$fgColor,$bgColor")
+    $Combos.Add("$fgColor,$bgColor")
     }
-  }
-}
-
-# Foreground-only combinations, excluding certain colors
-$excludedColors = @('Black', 'DarkRed', 'DarkMagenta')
-$Colors | Where-Object { $_ -notin $excludedColors } | ForEach-Object { $Combos.Add($_) }
-
-# Initialize ColorSplat object
-$colorSplat = [ColorSplat]::new('Sample')
-$colorSplat.Reset()
-
-foreach ($label in @('First!', 'Second')) {
-  $pair = ($Combos | Get-Random) -split ','
-
-  if ($pair.Count -eq 1) {
+    }
+    }
+    
+    # Foreground-only combinations, excluding certain colors
+    $excludedColors = @('Black', 'DarkRed', 'DarkMagenta')
+    $Colors | Where-Object { $_ -notin $excludedColors } | ForEach-Object { $Combos.Add($_) }
+    
+    # Initialize ColorSplat object
+    $colorSplat = [ColorSplat]::new('Sample')
+    $colorSplat.Reset()
+    
+    foreach ($label in @('First!', 'Second')) {
+    $pair = ($Combos | Get-Random) -split ','
+    
+    if ($pair.Count -eq 1) {
     $colorSplat.PushStream("$label", $pair[0])
-  }
-
-  else {
+    }
+    
+    else {
     $colorSplat.PushStream($label, $pair[0], $pair[1])
-  }
-
-  if ($pair.Count -gt 1) {
+    }
+    
+    if ($pair.Count -gt 1) {
     
     $colorSplat.PushStream("$($label -replace "!$")Flipped", $pair[1], $pair[0])
-  }
-}
-
-$colorSplat.Reveal($false,$true)
-
+    }
+    }
+    
+    $colorSplat.Reveal($false,$true)
+    
 </pre></p>
 </html></body>

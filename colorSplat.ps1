@@ -23,13 +23,14 @@ class ColorSplat {
       
       <!-- [Description]
       The <i><b>
-      <Font Color='DodgerBlue' Size="+1">Color</Font><Font Size="+1" Color='Red'>Splat</font>
+      <Font Color='DodgerBlue' >Color</Font><Font Color='Red'>Splat</font>
       </b></i> class provides a mechanism to define, manage, and persist custom streams.
       These streams are associated with foreground and background colors and can be invoked to 
       create variables in the script scope.
       -->
       
   #>
+  
   [string]
   <#
       <!-- [ConfigurationName]
@@ -62,12 +63,33 @@ class ColorSplat {
   [bool]
   <#
       <!-- [NewLineSuppression]
-     <ul><li>Unless New Line suppression is set to True before the stream is pushed, NoNewLine=$true is Added the the ColorSplat Variable
-     <li>This can be overriden by addint a trailing Exclamation Point to either the Stream name or Either color
- 
+      <ul><li>Unless New Line suppression is set to True before the stream is pushed, NoNewLine=$true is Added the the ColorSplat Variable
+      <li>This can be overriden by addint a trailing Exclamation Point to either the Stream name or Either color
+      
       -->
   #>
-  $NewLineSuppression
+  <#
+  <!-- [NoNewLineDefault]
+  Determines if -NoNewLine is added to the output color stream
+  -->
+  #>
+  
+  [ValidateSet($true, $false, 'Flip', 'Default', '+', '-','@')]
+  $NoNewLineDefault = $true
+  
+  Hidden $InstanceID = {
+    $Span = New-TimeSpan '1/1/1970'  # Days since Unix Epoch
+    $UnitsPassed = [float](Get-Date).TimeOfDay.TotalMilliseconds  # Total milliseconds today
+
+    [int64]$maxHexValue = [math]::Pow(16, 6)
+
+    [float]$scalar = $maxHexValue / (86400 * 1000)  
+
+    $scaledValue = [math]::Round($UnitsPassed * $scalar)  # Apply scaling
+	
+    '{0:X4}-{1:X6}' -f $Span.Days, $scaledValue
+  }
+
   hidden [string]$Postfix = $this.GetType()
 
   # Overloaded method to expand multiple streams with specified configurations.
@@ -89,15 +111,20 @@ class ColorSplat {
     }
 
   }
+
   # Overloaded method to expand a single stream with a foreground color only.
- hidden PushStream ([string]$stream, [string]$foreground) {
-    $this.PushStream($stream, $foreground, $null)
+  PushStream ([string]$stream, [string]$foreground) {
+    $this.PushStream($stream, $foreground, $null, $this.NoNewLineDefault)
+  }
+
+  PushStream ([string]$stream, [string]$foreground, [string]$background) {
+    $this.PushStream($stream, $foreground, $background, $this.NoNewLineDefault)
   }
 
   #Stream is an array passed as 'Stream|ForeGround|BackGround'
   #There can be Several Streams Passes at the same time
 
-  hidden AssertFireHose ([String[]]$Ammo) {
+  hidden DeployFireHose ([String[]]$Ammo) {
   
     <#
         <!-- [AssertFireHose]
@@ -118,20 +145,32 @@ class ColorSplat {
     }
 
   }
-  AssertStream($StreamString){
-     <#
+  AssertFireHose([string]$StreamString) {
+    <#
         <!-- [AssertStream]
         Adds or updates streams with specific color configurations.
         -->
     #>
-    [array]$Ammo=$StreamString -split ','
-    $this.AssertFireHose($Ammo)
+   
+    [array]$Ammo = $StreamString -split ","
+    #$this.DeployFireHose($Ammo)
+    foreach ($salvo in $Ammo) {
+      $round = $salvo.split('|')
+      if ($round.Count -eq 2) {
+
+        $this.PushStream($round[0], $round[1])
+      }
+
+      else {
+        $this.PushStream($round[0], $round[1], $round[2])
+      }
+    }
 
   }
-  
+
   # Expand a single stream with both foreground and background
 
- hidden PushStream ([string]$stream, [string]$foreground, [string]$background) {
+  hidden PushStream ([string]$stream, [string]$foreground, [string]$background, $noNewLineValue) {
 
     <#
         <!-- [PushStream]
@@ -149,18 +188,64 @@ class ColorSplat {
 
     $validColors = [Enum]::GetValues([ConsoleColor])
 
-    if ($foreground -notin $validColors) {
+    if (($foreground ) -notin $validColors) {
       throw "Invalid foreground color: $foreground. Valid options are: $($validColors -join ', ')"
     }
 
-    if ($background -notin $validColors) {
+    if (($background ) -notin $validColors) {
       throw "Invalid background color: $background. Valid options are: $($validColors -join ', ')"
     }
-    $HoldStream=$stream
-    $stream=$stream -replace '!$'
-    $validStream = $stream -replace '\s+'
-    
 
+    $NoNewLine = switch ($noNewLineValue) {
+      { $_ -in $true, $false } { $_ ; break }
+      Flip { !$this.NoNewLineDefault; break }
+      default { $this.NoNewLineDefault; break }
+    }
+    Function Test-Value {
+      param($item)
+      $newValue = $item
+      $terminator = $null
+      $letter = $item[-1]
+      switch ($letter) {
+        '+' { $terminator = $false; $newValue = $item.substring(0, $item.length - 1); break }
+        '-' { $terminator = $true; $newValue = $item.substring(0, $item.length - 1); break }
+        '@' { $terminator = !$this.NoNewLineDefault; $newValue = $item.substring(0, $item.length - 1); break }
+				
+      }
+
+      $result = @{}
+      if ($null -ne $terminator) {
+        $result.Terminator = $terminator
+      }
+
+      if ($newValue -ne $item) {
+        $result.Value = $newValue
+      }
+
+      return $result
+
+    }
+
+    $result = test-value $stream
+    if ($result.value ) {
+      $stream = $result.value
+      $NoNewLine = $result.Terminator
+    }
+
+    $result = test-value $foreground
+    if ($result.value ) {
+      $foreground = $result.value
+      $NoNewLine = $result.Terminator
+    }
+
+    $result = test-value $background
+    if ($result.value ) {
+      $background = $result.value
+      $NoNewLine = $result.Terminator
+    }
+
+    $validStream = $stream -replace '\W',' ' -replace '\s+'
+    
     if ($validStream -match '(?<=^\$)[^a-zA-Z0-9_{]|(?<=^\$\{)[^a-zA-Z0-9 _\-}]|(?<!^\$\{)[^\w]') {
       throw 'Invalid Characters in Variable Name'
     }
@@ -178,21 +263,6 @@ class ColorSplat {
 
     # Add the new stream configuration.
     $this.DefinedStreams.$stream = [ordered]@{}
-    # Manually iterate over elements and modify as needed
-    
-    $NoNewLine=!$this.NewLineSuppression
-    $stream=$HoldStream
-    $values = @($stream, $foreground, $backGround)
-
-    for ($i = 0; $i -lt $values.Count; $i++) {
-      if ($values[$i] -match '!') {
-        $values[$i] = $values[$i] -replace '!'
-        $NoNewLine = $False
-      }
-    }
-
-    # Assign modified values back
-    $stream, $foreground, $backGround = $values
 
 
     if (!([string]::IsNullOrEmpty($foreground))) {
@@ -202,9 +272,11 @@ class ColorSplat {
     if (!([string]::IsNullOrEmpty($background))) {
       $this.DefinedStreams.$stream.BackgroundColor = $background
     }
-    if($NoNewLine){
+
+    if ($NoNewLine) {
       $this.DefinedStreams.$stream.NoNewLine = $true
     }
+
     # Save the updated configuration to the file.
     $this.DefinedStreams | Export-Clixml -Path $this.FileName
   }
@@ -367,6 +439,16 @@ class ColorSplat {
     $this.Reveal($true, $true)
   }
 
+  <#
+      <!-- [Exemplify]
+      Display the results of Reveal in a Text Document
+      -->
+  #>
+  
+  Exemplify() {
+    $this.Reveal($true, $true)
+  }
+
   Reveal ([bool]$Brief, [bool]$notePad) {
 
     <#
@@ -411,14 +493,15 @@ class ColorSplat {
         if (![string]::IsNullOrEmpty($_)) {
           "$_" 
         }
-
       }
+
       $ArrayPieces += "@($($StreamDetails.ForEach{"'$_'"} -join ','))"
       
       $FlatPieces += $StreamDetails -join '|'
     }
 
     $className = $this.GetType().Name
+    $MultlineComment = "<#", "#>"
     Write-Host
     Write-Host '#Create ColorStream:'
     Write-Host $("`${0} = [{0}]::New('{1}')" -f $className, $this.ConfigurationName)
@@ -429,27 +512,39 @@ class ColorSplat {
 
     Write-Host
     Write-Host
-    Write-Host 'Preferred Method:' @global:Header_ColorSplat
+   
+    Write-Host
+    Write-Host
+    Write-Host '#Preferred Method:' @global:Header_ColorSplat
     Write-Host $("`${0} = [{0}]::New('{1}')" -f $className, $this.ConfigurationName)
    
-    $bravo="'$($FlatPieces -join ',')'"
-    $Alpha = "`$$($className).AssertStream($Bravo)"
+    $bravo = "'$($FlatPieces -join ',')'"
+    $Alpha = "`$$($className).AssertFireHose($Bravo)"
     Write-Host $Alpha @global:Normal_ColorSplat
 
-   
     Write-Host
     Write-Host
-    Write-Host 'One Liner:' @global:Header_ColorSplat
-    $oneLiner = "[ColorSplat]::new('$($this.ConfigurationName)').AssertStream($bravo)"
-    Write-Host $oneLiner @global:Normal_ColorSplat
+    Write-Host '#One Liner:' @global:Header_ColorSplat
+    Write-Host  "[ColorSplat]::new('$($this.ConfigurationName)').AssertFireHose($bravo)"
     
     Write-Host
     Write-Host
-    Write-Host "Configuration file: '$($this.FileName)'" @global:Normal_ColorSplat
-    Write-Host
-    Write-Host 'Defined Streams: ' @global:Header_ColorSplat
-    Write-Host ([string]$this) @global:Normal_ColorSplat
 
+    Write-Host
+    Write-Host $($MultlineComment[0]) @global:Normal_ColorSplat
+    Write-Host
+    Write-Host
+    Write-Host "#Configuration file: `n'$($this.FileName)'" @global:Normal_ColorSplat
+    Write-Host
+    Write-Host
+    Write-Host "Defined Streams:"  @global:Header_ColorSplat
+    Write-Host
+    Write-Host
+    Write-Host ([string]$this) @global:Normal_ColorSplat
+    Write-Host
+    Write-Host
+    Write-Host $($MultlineComment[1]) @global:Normal_ColorSplat
+  
     Write-Host
     Write-Host
     Write-Host '#Stream Variables:' @global:Header_ColorSplat
@@ -469,21 +564,31 @@ class ColorSplat {
       if (!$Brief -or $notePad) {
         $Value = '@{'
         $value += $(
-          @($streams.$key.Keys).ForEach{ "{0} = {1}" -f $_, $("`'$($streams.$key.$_)`'".PadRight($widestColor)) } -join '; '
+          @($streams.$key.Keys | sort).ForEach{ 
+           
+            $Q1 = "'"
+            $Q2 = "'"
+            if ($_ -eq 'NoNewLine') {
+              $Q1 = '$'
+              $Q2 = ''
+            }
+
+          "{0} = {1} " -f $_, $("$q1$($streams.$key.$_)$q2".PadRight($widestColor)) } -join '; '
         )
         $value += '}'
         #Write-Host "`$$($key)_$($this.Postfix)$(" = $Value")" @splat
         Write-Host "$("`$$($key)_$($this.Postfix)".PadRight($wide))$(" = $Value")" @splat
-        if($splat.NoNewLine){
+        if ($splat.NoNewLine) {
           Write-Host
         }
+
         $Brief = $false
       }
 
       if ($Brief) {
         
         Write-Host "@$($key)_$($this.Postfix)" @splat
-        if($splat.NoNewLine){
+        if ($splat.NoNewLine) {
           Write-Host
         }
       }
@@ -496,12 +601,20 @@ class ColorSplat {
       Write-Host $("`${0} = [{0}]::New('{1}')" -f $className, $this.ConfigurationName)
       Write-Host "`$$classname.Reset()"
        
-      Write-Host "`$$classname.AssertFirehose($bravo)"
+      Write-Host "`$$classname.AssertFireHose($bravo)"
       Write-Host "`$$classname.Invoke()"
-	
+      Write-Host
+      Write-Host
+      $wideStream = ($streams.Keys.length | sort | select -Last 1) + $this.Postfix.Length + 3
       foreach ($key in $streams.Keys | sort) {
-        Write-Host "'$($key)_$($this.Postfix)'|Write-host @$($($key))_$($this.Postfix)"
+   
+        $line = "{0,$wideStream}| Write-Host @$($($key))_$($this.Postfix)" -f "'$($key)_$($this.Postfix)'"
+        Write-Host $line
       }
+
+      Write-Host
+      Write-Host
+      Write-Host '$ColorSplat.Rescind()'
     }
 
     Stop-Transcript
@@ -510,17 +623,28 @@ class ColorSplat {
       #$this.ToNotePad($clip)
       $content = Get-Content $transcriptFile
       Remove-Item $transcriptFile
-      $contentString = $content -join "`n"  -replace "`n`n","`n"
+      $contentString = $content -join "`n" -replace "`n`n", "`n"
       $stars = [regex]::Escape($content[0])
-      $breaks = [regex]::Matches($content, $stars)
-      $start = $breaks[1].Index + $breaks[1].Length + 1
-      $Length = $breaks[2].Index - $start
-      $contentString.Substring($start, $Length) | Set-Content $transcriptFile
+     
+      ($contentString -split $stars)[2] | Set-Content $transcriptFile
       
       do {
         Start-Sleep -Milliseconds 10
       } until (Test-Path $transcriptFile)
-      Invoke-Item $transcriptFile
+      $i = 0
+        
+      if ((Get-PSCallStack).FunctionName -match 'Exemplify') {
+        $NewFile = [io.path]::ChangeExtension($transcriptFile, 'ps1')
+
+        Copy-Item $transcriptFile -Destination $NewFile
+        
+        psedit $NewFile
+
+      }
+
+      else {
+        Invoke-Item $transcriptFile
+      }
     }
 
     $splatters.Rescind()
@@ -584,7 +708,7 @@ class ColorSplat {
     }
     # Determine the maximum width of the Caption field for alignment
     $Wide = ($Combos.Caption | Measure-Object -Property Length -Maximum).Maximum + 2
-    $mask = "{1,3} {0,-$Wide}"
+    $mask = "{ 1, 3 } { 0, -$Wide }"
 
     # Initialize layout variables
     $i = 0
@@ -595,6 +719,7 @@ class ColorSplat {
     foreach ($combo in $Combos) {
 
       $splat = $combo.ColorSplat
+      $splat.NoNewLine=$true
       $bgColor = [string]$combo.ColorSplat.BackgroundColor
 
       if ($LastBG -ne $bgColor) {
@@ -606,8 +731,10 @@ class ColorSplat {
         $i = 0
         $LastBG = $bgColor
       }
+      
+      $label="$(([string]$combo.ID).PadLeft(3)) $($combo.caption.PadRight($Wide))"
 
-      Write-Host ($mask -f $combo.Caption, $combo.ID) @splat -NoNewline
+      Write-Host $label @splat
 
       if ($i++ % $Columns -eq ($Columns - 1)) {
         Write-Host
@@ -646,20 +773,12 @@ class ColorSplat {
     #>
     $tail = "_$($this.Postfix)"
     $streams = $this.DefinedStreams
-    <#
-        foreach ($key in $streams.Keys) {
-        
-        Set-Variable -Name "$($key)$tail" -Value $($streams.$key) -Scope global -Description "$($this.ConfigurationName) Color Stream (for write-host)"
-        #Write-Verbose "@$($key)Colors $([psCustomObject]$streams.$key)" -Verbose
-        }
-        
-        $streams = $this.DefinedStreams
-    #>
-		
+
     foreach ($key in $streams.Keys) {
       $splat = [Ordered]@{}      
       $splat.Name = "$($key)$($tail)"
       $splat.Value = $($streams.$key)
+      $splat.Description = $this.InstanceID
       $splat.Scope = 'Global'
       Set-Variable @splat
     }
@@ -674,13 +793,11 @@ class ColorSplat {
     $tail = "_$($this.Postfix)"
     $streams = $this.DefinedStreams
     
-    $NumericScope = (Get-PSCallStack).Count - 1
     foreach ($key in $streams.Keys) {
       $splat = [Ordered]@{}
       $splat.Name = "$($key)$($tail)"
       $splat.Scope = 'Global'
       if (Test-Path "Variable:\$($splat.Name)") {
-
         Remove-Variable @splat
       }
     }
@@ -710,19 +827,7 @@ class ColorSplat {
 <#Example Block
     [ColorSplat]::new('Example').AssertFirehose(@('Alpha|Red', 'Bravo|White', 'Charlie|Blue', 'Delta|Red|White', 'Echo|Red|Blue', 'Foxtrot|White|Red', 'Golf|White|Blue', 'Hotel|Blue|Red', 'India|Blue|White'))
 #Example Block#>
-<#Example Block
-    $ColorSplat=[ColorSplat]::New('Example')
-    $ColorSplat.AssertFireHose(@('Alpha|Blue|White','Bravo|White|Blue','Charlie|Red|Blue','Delta|Blue|Red','Echo|Red|White','Foxtrot|White|Red'))
-    $ColorSplat.Reveal($true,$true)
-    #Example Block>
-    
-    <#Example Block
-    $ColorSplat = [ColorSplat]::new('Example')
-    $Quick = @(@('Alpha', 'White', 'Red'), @('Bravo', 'White', 'Blue'), @('Charlie', 'Blue', 'White'), @('Delta', 'White', 'Green'))
-    
-    $ColorSplat.PushStreams($quick)
-    $ColorSplat.Reveal($true, $true)
-#Example Block#>
+
 <#Example Block
     $ColorSplat = [ColorSplat]::new('ColorSplat')
     $ColorSplat.Reset()
@@ -731,68 +836,66 @@ class ColorSplat {
     $ColorSplat.PushStream('Normal','Gray')
     
     $ColorSplat.Reveal($false,$true)
-#>
+#Example Block#>
 
-<#
-    New-ClassHelperMaker -ConstructorString "[ColorSplat]::new('Example')" -ClassPath $psISE.CurrentFile.FullPath -Install
+<#Example Block
     
-#>
-<#
-    $ColorSplat = [ColorSplat]::new('Example')
-    $ColorSplat.Reset()
-    $Quick = @(@('Alpha', 'White', 'Red'), @('Bravo', 'White', 'Blue'), @('Charlie', 'Blue', 'White'), @('Delta', 'White', 'Green'))
-    
-    $ColorSplat.PushStreams($quick)
-    $ColorSplat.Reveal($true, $true)
-#>
-<#
     if (Get-Module OSGPSX) {
     Remove-Module OSGPSX -Force
     }
     
     $ColorSplat = [ColorSplat]::new('Example')
     $colorsplat.AssertFireHose('Red|Red','White|White|Red','Blue|Blue')
-    $ColorSplat.toNotePad()
-#>
+    $ColorSplat.Exemplify()
+#Example Block#>
+
 <#Example Block
-
-$Colors = [Enum]::GetNames('ConsoleColor')
-# Generate color combinations
-$Combos = [System.Collections.Generic.List[string]]::new()
-
-foreach ($bgColor in $Colors) {
-  foreach ($fgColor in $Colors) {
+    
+    $Colors = [Enum]::GetNames('ConsoleColor')
+    # Generate color combinations
+    $Combos = [System.Collections.Generic.List[string]]::new()
+    
+    foreach ($bgColor in $Colors) {
+    foreach ($fgColor in $Colors) {
     if ($bgColor -ne $fgColor -and ($bgColor -notmatch 'Dark' -or $fgColor -notmatch 'Dark')) {
-      $Combos.Add("$fgColor,$bgColor")
+    $Combos.Add("$fgColor,$bgColor")
     }
-  }
-}
-
-# Foreground-only combinations, excluding certain colors
-$excludedColors = @('Black', 'DarkRed', 'DarkMagenta')
-$Colors | Where-Object { $_ -notin $excludedColors } | ForEach-Object { $Combos.Add($_) }
-
-# Initialize ColorSplat object
-$colorSplat = [ColorSplat]::new('Sample')
-$colorSplat.Reset()
-
-foreach ($label in @('First!', 'Second')) {
-  $pair = ($Combos | Get-Random) -split ','
-
-  if ($pair.Count -eq 1) {
+    }
+    }
+    
+    # Foreground-only combinations, excluding certain colors
+    $excludedColors = @('Black', 'DarkRed', 'DarkMagenta')
+    $Colors | Where-Object { $_ -notin $excludedColors } | ForEach-Object { $Combos.Add($_) }
+    
+    # Initialize ColorSplat object
+    $colorSplat = [ColorSplat]::new('Sample')
+    $colorSplat.Reset()
+    
+    foreach ($label in @('First!', 'Second')) {
+    $pair = ($Combos | Get-Random) -split ','
+    
+    if ($pair.Count -eq 1) {
     $colorSplat.PushStream("$label", $pair[0])
-  }
-
-  else {
+    }
+    
+    else {
     $colorSplat.PushStream($label, $pair[0], $pair[1])
-  }
-
-  if ($pair.Count -gt 1) {
+    }
+    
+    if ($pair.Count -gt 1) {
     
     $colorSplat.PushStream("$($label -replace "!$")Flipped", $pair[1], $pair[0])
-  }
-}
-
-$colorSplat.Reveal($false,$true)
-
+    }
+    }
+    
+    $colorSplat.Reveal($false,$true)
+    
 #Example Block#>
+
+<#
+    
+    Remove-Module OSGPSX -force
+    New-ClassHelperMaker -ConstructorString "[ColorSplat]::new('Example')" -ClassPath $psISE.CurrentFile.FullPath -Install
+    
+#>
+

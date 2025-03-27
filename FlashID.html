@@ -5,6 +5,7 @@ table, th, td {
   border: 1px solid black;
   border-spacing: 15px 50px;
   border-collapse: collapse;
+    font-size: 12px;
 }
 table {
   width: 98%;
@@ -14,6 +15,7 @@ th, td {
 }
 body {
   font-family: lucida console;
+  font-size: 12px;
 	margin-left: 38px;
 }
     
@@ -25,7 +27,7 @@ body {
 <h2>Synopsis</h2>
       Generates a unique Instance ID
 <h2>Description</h2>
-      Generates a unique Instance ID based on time eLapsed since the DOS Epoch<br>  4B1C-2738-PQNJ<br><br>The first Section is a 4 character Hexidecimal representation of the Days eLapsed since 1/1/1970<br>  The second section is a representation of the time passed in the current day.  <br>The third section is a 4 Character (Adjunct) Alpha string, which will insure that the FlashID is unique across different installations. <br>(Adjunct string will not include and digits or characters used in Hexidecimal notation, [0-9][A-F])<br>      <br>Note also, [FlashID] is based on GMT
+      Generates a unique instance identifier based on elapsed time since a specified epoch, ensuring uniqueness across different systems. <br>      <br><i>The structure of FlashID is</i>      <br><br>4EBF-B06A-LQNO<br><br><table style="border: none; border-collapse: collapse; width: 80%;">  <tr>    <td style="border: none; vertical-align: top;"><i>HexDate</i></td><td style="border: none;"/>    <td style="border: none; vertical-align: top;">4-character hexadecimal representation of the number of days elapsed since the specified epoch. (The default is 1/1/1970, the UNIX epoch).</td>  </tr>  <tr>    <td style="border: none; vertical-align: top;"><i>Partial Day</i></td><td style="border: none;"/>    <td style="border: none; vertical-align: top;">A time-based component representing the elapsed time in the current day.</td>  </tr>  <tr>    <td style="border: none; vertical-align: top;"><i>Adjunct</i></td><td style="border: none;"/>    <td style="border: none; vertical-align: top;">      A 4-character random alpha string ensuring uniqueness across different installations.<br>The Adjunct string does not contain digits or characters used in hexadecimal notation (`0-9`, `A-F`).         </td>  </tr></table>  
 <h2>Properties</h2>
 <table>
 <colgroup><col width="10%"><col width="50%"><col></colgroup>
@@ -63,6 +65,19 @@ switch BriefMode {get;set;}
 <tr>
 <td>
 
+Epoch
+
+</td>
+<td>
+      defines the starting date for the time-based calculations.
+</td>
+<td>
+string Epoch {get;set;}
+</td>
+</tr>
+<tr>
+<td>
+
 Expanded
 
 </td>
@@ -71,6 +86,19 @@ Expanded
 </td>
 <td>
 switch Expanded {get;set;}
+</td>
+</tr>
+<tr>
+<td>
+
+FlashMark
+
+</td>
+<td>
+      is a fine-grained timestamp (tenths of a millisecond) ensuring uniqueness of generated IDs.
+</td>
+<td>
+int FlashMark {get;set;}
 </td>
 </tr>
 <tr>
@@ -123,6 +151,19 @@ Length
 </td>
 <td>
 int Length {get;set;}
+</td>
+</tr>
+<tr>
+<td>
+
+LogJamCount
+
+</td>
+<td>
+      tracks how many times a duplicate FlashMark had to be regenerated.
+</td>
+<td>
+int LogJamCount {get;set;}
 </td>
 </tr>
 <tr>
@@ -206,7 +247,7 @@ Brief
 
 </td>
 <td>
-                 Default FlashID without Adjunct Section        <UL><li>Note: Because Brief Mode is a representaion of time passed in a day,           unique FlashID can not be guaranteed in brief mode with a fast processor
+                 Default FlashID without Adjunct Section        <UL><li>Note: Because Brief Mode is a representaion of time passed in a day,         unique FlashID can not be guaranteed in brief mode with a fast processor
 </td>
 <td>
 static string Brief()
@@ -245,7 +286,7 @@ TempFile
 
 </td>
 <td>
-Creates a new Temporary file with a FlashID style FileName
+      Creates a new Temporary file with a FlashID style FileName
 </td>
 <td>
 static System.IO.FileInfo TempFile(System.Object Extension)<br>static System.IO.FileInfo TempFile()
